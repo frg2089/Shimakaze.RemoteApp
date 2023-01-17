@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Drawing;
 
-namespace Shimakaze.RemoteApp.Web.Services;
+namespace Shimakaze.RemoteApp.Web;
 
 public class IconLoader
 {
@@ -22,7 +22,7 @@ public class IconLoader
     //    return From32bppArgbSystemDrawingBitmap<Bgra32>(bitmap);
     //}
 
-    public static Icon GetImage(string path)
+    public static Icon? GetImage(string path)
     {
         SHFILEINFOW shfileinfo = new();
         unsafe
@@ -38,7 +38,7 @@ public class IconLoader
         Guid guid = typeof(IImageList2).GUID;
         PInvoke.SHGetImageList(unchecked((int)PInvoke.SHIL_JUMBO), in guid, out object obj);
         if (obj is not IImageList2 imageList)
-            throw new Exception();
+            return null;
 
         imageList.GetIcon(shfileinfo.iIcon, (uint)(IMAGE_LIST_DRAW_STYLE.ILD_TRANSPARENT | IMAGE_LIST_DRAW_STYLE.ILD_IMAGE), out DestroyIconSafeHandle hIcon);
 

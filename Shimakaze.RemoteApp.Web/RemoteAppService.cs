@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 using Shimakaze.RemoteApp.Kernel;
 using Shimakaze.RemoteApp.Kernel.WebFeed;
 
-namespace Shimakaze.RemoteApp.Web.Services;
+namespace Shimakaze.RemoteApp.Web;
 
 public sealed class RemoteAppService
 {

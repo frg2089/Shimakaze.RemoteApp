@@ -1,57 +1,43 @@
+using System.Xml.Serialization;
+
 using Microsoft.AspNetCore.StaticFiles;
 
 using Shimakaze.RemoteApp.Kernel;
-using Shimakaze.RemoteApp.Web.Services;
-
-// Is Administrator Identity?
-// if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-// {
-//var identity = WindowsIdentity.GetCurrent();
-//WindowsPrincipal principal = new(identity);
-//if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
-//{
-//    Console.Error.WriteLine("We MUST run as Administrator");
-//    Environment.Exit(-1);
-//}
-// }
-
-
+using Shimakaze.RemoteApp.Kernel.WebFeed;
+using Shimakaze.RemoteApp.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<RemoteApps>();
-builder.Services.AddSingleton<RemoteAppService>();
-
-builder.Services.AddMvcCore().AddXmlSerializerFormatters();
+builder.Services
+    .AddSingleton<RemoteApps>()
+    .AddSingleton<RemoteAppService>()
+    .AddWindowsService()
+    .AddHostedService<Worker>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app
+    .UseHttpsRedirection()
+    .UseStaticFiles(new StaticFileOptions
+    {
+        ContentTypeProvider = new FileExtensionContentTypeProvider(
+        new Dictionary<string, string>
+        {
+            [".rdp"] = "text/plain"
+        })
+    });
+
+XmlSerializer serializer = new(typeof(ResourceCollection));
+app.MapGet("/", async (HttpContext context) =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    var logger = app.Services.GetService<ILogger<RemoteAppService>>();
+    var service = app.Services.GetRequiredService<RemoteAppService>();
 
-app.UseHttpsRedirection();
-
-// Set up custom content types - associating file extension to MIME type
-var provider = new FileExtensionContentTypeProvider();
-provider.Mappings[".rdp"] = "text/plain";
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    ContentTypeProvider = provider
+    logger?.LogInformation("UserAgent:\r\n{0}", context.Request.Headers.UserAgent.ToString());
+    context.Response.ContentType = "application/xml";
+    serializer.Serialize(context.Response.BodyWriter.AsStream(), await service.GetRDS());
+    await context.Response.Body.FlushAsync();
+    await context.Response.Body.DisposeAsync();
+    return Results.Ok();
 });
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
