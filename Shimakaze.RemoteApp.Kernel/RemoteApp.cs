@@ -12,7 +12,7 @@ public sealed record RemoteApp(
     string IconPath = "",
     int IconIndex = 0,
     int TSWA = 0,
-    IEnumerable<FileTypeAssociation>? FileTypeAssociations = default
+    FileTypeAssociation[]? FileTypeAssociations = default
 )
 {
     public string Name { get; set; } = Name;
@@ -34,7 +34,7 @@ public sealed record RemoteApp(
             {
                 var tmp = filetypes.GetValue<string>(j, ",").Split(',');
                 return new FileTypeAssociation(j, tmp[0], tmp[1]);
-            })
+            }).ToArray()
         );
     }
 

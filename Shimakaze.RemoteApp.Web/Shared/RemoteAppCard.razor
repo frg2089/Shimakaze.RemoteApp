@@ -1,0 +1,95 @@
+﻿@using System.Net;
+@using System.Drawing;
+@using Shimakaze.RemoteApp.Web.Services;
+
+@inject IConfiguration _config
+@inject ILogger<RemoteAppCard> _logger
+@inject RemoteAppService _service
+
+<FluentButton Appearance="Appearance.Neutral" @onclick="OnEdit" Style="min-height: 36px">
+  @if (pngExists)
+  {
+    <img slot="start" src="/@png" alt="@App.Name" style="width: 32px;" />
+  }
+  <span>
+    @App.Name
+  </span>
+</FluentButton>
+
+<FluentDialog @ref="MyFluentDialog"
+              aria-label="@App.Name"
+              Hidden
+              Style="padding: 1rem;"
+              @ondialogdismiss=OnDismiss>
+  <FluentTextArea Style="width: 100%;"
+                  Rows="1000"
+                  Autofocus
+                  Value="@rdpvalue"
+                  Resize="TextAreaResize.Vertical"
+                  ValueChanged="v => rdpvalue = v">
+    <h2>@App.Name</h2>
+  </FluentTextArea>
+  <FluentButton Appearance="Appearance.Accent" Autofocus="true" @onclick="OnSave">Save</FluentButton>
+  <FluentButton @onclick="OnCancel">Cancel</FluentButton>
+</FluentDialog>
+
+@code {
+  private static string hostName = Dns.GetHostName();
+  private string png = string.Empty;
+  private string ico = string.Empty;
+  private string rdp = string.Empty;
+  private string pngTruePath = string.Empty;
+  private string icoTruePath = string.Empty;
+  private string rdpTruePath = string.Empty;
+  private bool pngExists;
+  private bool icoExists;
+  private bool rdpExists;
+  private FluentDialog? MyFluentDialog;
+
+  private string rdpvalue = string.Empty;
+
+  [Parameter]
+  public required RemoteApp App { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    string path = _config.GetValue<string>("StaticResourcesPath") ?? string.Empty;
+
+    (png, ico, rdp, pngTruePath, icoTruePath, rdpTruePath) = _service.GetPaths(App, path);
+
+    pngExists = File.Exists(pngTruePath);
+    icoExists = File.Exists(icoTruePath);
+    rdpExists = File.Exists(rdpTruePath);
+
+    await base.OnInitializedAsync();
+  }
+
+  private async void OnEdit(MouseEventArgs eventArgs)
+  {
+    await _service.GenerateFilesIfNotExist(App, rdpTruePath, icoTruePath, pngTruePath);
+
+    rdpvalue = await File.ReadAllTextAsync(rdpTruePath);
+
+    MyFluentDialog!.Show();
+  }
+
+  private void OnCancel()
+  {
+    MyFluentDialog!.Hide();
+  }
+
+  private async void OnSave()
+  {
+    MyFluentDialog!.Hide();
+    _logger.LogInformation($"New RDP \"{rdpTruePath}\":\r\n" + rdpvalue);
+    await File.WriteAllTextAsync(rdpTruePath, rdpvalue);
+  }
+
+  private void OnDismiss(DialogEventArgs args)
+  {
+    if (args is not null && args.Reason is not null && args.Reason == "dismiss")
+    {
+      MyFluentDialog!.Hide();
+    }
+  }
+}

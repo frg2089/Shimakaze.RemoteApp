@@ -1,0 +1,17 @@
+﻿@page "/dashboard"
+@using System.Net;
+@inject RemoteApps remoteApps
+
+<PageTitle>Remote Applications</PageTitle>
+
+<div style="display: flex;">
+
+  @foreach (var app in remoteApps.GetRemoteApps())
+  {
+    <RemoteAppCard App="app" />
+  }
+
+</div>
+
+@code {
+}

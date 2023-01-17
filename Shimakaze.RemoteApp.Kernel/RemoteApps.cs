@@ -88,13 +88,13 @@ public sealed class RemoteApps : IDisposable
 
     public RemoteApps()
     {
-        CurrentVersion = Registry.LocalMachine.OpenSubKey(RegistryCurrentVersion) ?? Registry.LocalMachine.CreateSubKey(RegistryCurrentVersion);
-        TerminalServer = CurrentVersion.OpenSubKey(RegistryTerminalServer) ?? CurrentVersion.CreateSubKey(RegistryTerminalServer);
-        TSAppAllowList = TerminalServer.OpenSubKey(RegistryTSAppAllowList) ?? TerminalServer.CreateSubKey(RegistryTSAppAllowList);
-        Applications = TSAppAllowList.OpenSubKey(RegistryApplications) ?? TSAppAllowList.CreateSubKey(RegistryApplications);
-        PolicyMicrosoft = Registry.LocalMachine.OpenSubKey(RegistryPolicyMicrosoft) ?? Registry.LocalMachine.CreateSubKey(RegistryPolicyMicrosoft);
-        PolicyWindowsNT = PolicyMicrosoft.OpenSubKey(RegistryPolicyWindowsNT) ?? PolicyMicrosoft.CreateSubKey(RegistryPolicyWindowsNT);
-        PolicyTerminalServer = PolicyWindowsNT.OpenSubKey(RegistryPolicyTerminalServer) ?? PolicyWindowsNT.CreateSubKey(RegistryPolicyTerminalServer);
+        CurrentVersion = Registry.LocalMachine.OpenSubKey(RegistryCurrentVersion, true) ?? Registry.LocalMachine.CreateSubKey(RegistryCurrentVersion, true);
+        TerminalServer = CurrentVersion.OpenSubKey(RegistryTerminalServer, true) ?? CurrentVersion.CreateSubKey(RegistryTerminalServer, true);
+        TSAppAllowList = TerminalServer.OpenSubKey(RegistryTSAppAllowList, true) ?? TerminalServer.CreateSubKey(RegistryTSAppAllowList, true);
+        Applications = TSAppAllowList.OpenSubKey(RegistryApplications, true) ?? TSAppAllowList.CreateSubKey(RegistryApplications, true);
+        PolicyMicrosoft = Registry.LocalMachine.OpenSubKey(RegistryPolicyMicrosoft, true) ?? Registry.LocalMachine.CreateSubKey(RegistryPolicyMicrosoft, true);
+        PolicyWindowsNT = PolicyMicrosoft.OpenSubKey(RegistryPolicyWindowsNT, true) ?? PolicyMicrosoft.CreateSubKey(RegistryPolicyWindowsNT, true);
+        PolicyTerminalServer = PolicyWindowsNT.OpenSubKey(RegistryPolicyTerminalServer, true) ?? PolicyWindowsNT.CreateSubKey(RegistryPolicyTerminalServer, true);
     }
 
     public RemoteApp[] GetRemoteApps()

@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace Shimakaze.RemoteApp.Kernel.Rdp;
+
 public class RDPFile
 {
     public int administrative_session { get; set; } = 0;
@@ -78,23 +80,7 @@ public class RDPFile
     public int videoplaybackmode { get; set; } = 1;
     public string winposstr { get; set; } = "0,3,0,0,800,600";
 
-    public void SaveRDPfile(string FilePath, bool SaveDefaultSettings = false)
-    {
-        // while (!(FileLocked == "No locks"))
-        // {
-        //     if ((MessageBox.Show("The file " + FilePath + " is currently locked.  Lock information:" + FileLocked + Environment.NewLine + "Do you want to try again?", "File Locked", MessageBoxButtons.YesNo) == DialogResult.Yes))
-        //         FileLocked = LockCheck.CheckLock(FilePath);
-        //     else
-        //     {
-        //         MessageBox.Show("The following file will not be copied:" + Environment.NewLine + FilePath);
-        //         SkipFile = true;
-        //         FileLocked = "No locks";
-        //     }
-        // }
-        File.WriteAllText(FilePath, GetRDPstring(SaveDefaultSettings));
-    }
-
-    public string GetRDPstring(bool SaveDefaultSettings = false)
+    public string ToString(bool SaveDefaultSettings = false)
     {
         StringBuilder RDPstring = new();
 
@@ -252,6 +238,8 @@ public class RDPFile
 
         return RDPstring.ToString();
     }
+
+    public override string ToString() => ToString(false);
 
     public static RDPFile LoadRDPfile(string FilePath)
     {

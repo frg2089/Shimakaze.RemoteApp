@@ -2,6 +2,8 @@
 
 using System.Xml.Serialization;
 
+namespace Shimakaze.RemoteApp.Kernel.WebFeed;
+
 [XmlRoot(Namespace = "http://schemas.microsoft.com/ts/2007/05/tswf")]
 public sealed class ResourceCollection
 {
