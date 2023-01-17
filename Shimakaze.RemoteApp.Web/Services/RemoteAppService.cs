@@ -22,8 +22,8 @@ public sealed class RemoteAppService
 
     private Icon GetIcon(string path, int index)
     {
-        return Icon.ExtractAssociatedIcon(path)
-            ?? Icon.ExtractAssociatedIcon(_configuration.GetValue<string>("DefaultIconPath") ?? string.Empty)
+        return IconLoader.GetImage(path)
+            ?? IconLoader.GetImage(_configuration.GetValue<string>("DefaultIconPath") ?? string.Empty)
             ?? throw new InvalidOperationException("Cannot found icon");
     }
 
