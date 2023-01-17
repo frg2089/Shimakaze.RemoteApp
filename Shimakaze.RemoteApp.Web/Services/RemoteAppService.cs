@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Net;
+using System.Net.NetworkInformation;
 
 using Shimakaze.RemoteApp.Kernel;
 using Shimakaze.RemoteApp.Kernel.WebFeed;
@@ -8,6 +9,7 @@ namespace Shimakaze.RemoteApp.Web.Services;
 
 public sealed class RemoteAppService
 {
+    private const string FileNotFoundMessage = "Cannot found {0} file. we will create it.";
     private readonly RemoteApps _apps;
     private readonly ILogger<RemoteAppService> _logger;
     private readonly IConfiguration _configuration;
@@ -31,7 +33,7 @@ public sealed class RemoteAppService
     {
         if (!File.Exists(ico))
         {
-            _logger.LogInformation("Cannot found .ico file. we will create it.");
+            _logger.LogInformation(FileNotFoundMessage, ico);
 
             icon.Value.ToBitmap().Save(
                 ico,
@@ -40,7 +42,7 @@ public sealed class RemoteAppService
 
         if (!File.Exists(png))
         {
-            _logger.LogInformation("Cannot found .png file. we will create it.");
+            _logger.LogInformation(FileNotFoundMessage, png);
 
 
             icon.Value.ToBitmap().Save(
@@ -57,8 +59,11 @@ public sealed class RemoteAppService
 
     private async Task ExportRDP(Kernel.RemoteApp app, string rdp)
     {
-        _logger.LogInformation("Cannot found .rdp file. we will create it.");
-        await File.WriteAllTextAsync(rdp, app.CreateRDPFile(Hostname).ToString()).ConfigureAwait(false);
+        if (!File.Exists(rdp))
+        {
+            _logger.LogInformation(FileNotFoundMessage, rdp);
+            await File.WriteAllTextAsync(rdp, app.CreateRDPFile(Hostname).ToString()).ConfigureAwait(false);
+        }
     }
 
     public (string png, string ico, string rdp, string pngTruePath, string icoTruePath, string rdpTruePath) GetPaths(Kernel.RemoteApp app, string path)

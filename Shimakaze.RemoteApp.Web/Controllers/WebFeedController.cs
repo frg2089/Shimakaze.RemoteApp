@@ -24,8 +24,8 @@ public class WebFeedController : ControllerBase
     {
         // TSWorkspace/2.0
         _logger.LogInformation("UserAgent:\r\n{0}", Request.Headers.UserAgent.ToString());
-        if (Request.Headers.UserAgent.Any(i => !string.IsNullOrWhiteSpace(i) && i.StartsWith("Mozilla")))
-            return Redirect("/dashboard");
+        //if (Request.Headers.UserAgent.Any(i => !string.IsNullOrWhiteSpace(i) && i.StartsWith("Mozilla")))
+        //    return Redirect("/dashboard");
 
         return Ok(await _service.GetRDS());
     }
