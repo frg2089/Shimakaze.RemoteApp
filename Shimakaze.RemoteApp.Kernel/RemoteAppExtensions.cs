@@ -8,6 +8,7 @@ public static class RemoteAppExtensions
 {
     public static RDPFile CreateRDPFile(this RemoteApp app, string hostname) => new()
     {
+        keyboardhook = 3,
         allow_desktop_composition = 1,
         allow_font_smoothing = 1,
         alternate_full_address = hostname,
@@ -28,7 +29,7 @@ public static class RemoteAppExtensions
         remoteapplicationfileextensions = string.Join(',', app.FileTypeAssociations?.Select(i => $".{i.Extension}") ?? Array.Empty<string>())
     };
 
-    public static Resource CreateWebFeedResource(this RemoteApp app, string hostname, string rdpPath, string icoPath, string pngPath, DateTime lastUpdated) => new()
+    public static Resource CreateWebFeedResource(this RemoteApp app, TerminalServerRef terminalServerRef, string rdpPath, string icoPath, string pngPath, DateTime lastUpdated) => new()
     {
         ID = app.Name,
         Alias = app.Name,
@@ -37,26 +38,20 @@ public static class RemoteAppExtensions
         Type = "RemoteApp",
         Icons = new()
         {
-            IconRaw = new() { FileURL = icoPath },
-            Icon32 = new() { FileURL = pngPath }
+            IconRaw = new(icoPath),
+            Icon32 = new(pngPath)
         },
         FileExtensions = app.FileTypeAssociations?.Select(i => new FileExtension()
         {
             Name = i.Extension.TrimStart('.'),
             FileAssociationIcons = new IconRaw[]{
-                new (){
-                    FileURL = $"{app.Name}.{i.Extension.TrimStart('.')}.ico"
-                }
+                new (  $"{app.Name}.{i.Extension.TrimStart('.')}.ico")
             },
         }).ToArray() ?? Array.Empty<FileExtension>(),
         HostingTerminalServers = new HostingTerminalServer[]{
             new (){
-                ResourceFile = new(){
-                    URL = rdpPath,
-                },
-                TerminalServerRef = new(){
-                    Ref = hostname
-                }
+                ResourceFile =  new(rdpPath),
+                TerminalServerRef = terminalServerRef
             }
         }
     };

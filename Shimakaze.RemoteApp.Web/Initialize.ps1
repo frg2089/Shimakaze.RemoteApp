@@ -53,7 +53,10 @@ New-Service `
   -BinaryPathName "$PSScriptRoot\Shimakaze.RemoteApp.Web.exe" `
   -DisplayName "Shimakaze Remote Desktop Source" `
   -Description "Provide subscription source services for remote desktops and applications." `
-  -StartupType "Automatic"
+  -StartupType "Automatic" `
+| Out-Null
+New-Item -ItemType "Directory" -Path "wwwroot" `
+| Out-Null
 
 $obj = Get-Content "$PSScriptRoot\appsettings.json" | ConvertFrom-Json
 $obj.AllowedHosts = $hostname
@@ -61,7 +64,5 @@ $obj.StaticResourcesPath = "$PSScriptRoot\wwwroot"
 $obj.DefaultIconPath = "$([System.Environment]::GetFolderPath('System'))\shell32.dll"
 $obj.Kestrel.Certificates.Default.Password = Get-String $spwd
 $obj | ConvertTo-Json -Depth 5 | Out-File "$PSScriptRoot\appsettings.json" -Force
-
-New-Item -ItemType "Directory" -Path "wwwroot"
 
 Start-Service "Shimakaze RDS"

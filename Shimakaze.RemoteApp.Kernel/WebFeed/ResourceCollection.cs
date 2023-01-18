@@ -62,20 +62,38 @@ public sealed class Icons
 
 public sealed class IconRaw
 {
+    public IconRaw() : this(string.Empty)
+    {
+    }
+
+    public IconRaw(string fileURL)
+    {
+        FileURL = fileURL;
+    }
+
     [XmlAttribute]
     public string FileType { get; set; } = "Ico";
     [XmlAttribute]
-    public string FileURL { get; set; } = "";
+    public string FileURL { get; set; }
 }
 
 public sealed class Icon32
 {
+    public Icon32() : this(string.Empty)
+    {
+    }
+
+    public Icon32(string fileURL)
+    {
+        FileURL = fileURL;
+    }
+
     [XmlAttribute]
     public string Dimensions { get; set; } = "32x32";
     [XmlAttribute]
     public string FileType { get; set; } = "Png";
     [XmlAttribute]
-    public string FileURL { get; set; } = "";
+    public string FileURL { get; set; }
 }
 
 public sealed class FileExtension
@@ -99,17 +117,35 @@ public sealed class HostingTerminalServer
 
 public sealed class ResourceFile
 {
+    public ResourceFile() : this(string.Empty)
+    {
+    }
+
+    public ResourceFile(string uRL)
+    {
+        URL = uRL;
+    }
+
     [XmlAttribute]
     public string FileExtension { get; set; } = ".rdp";
     [XmlAttribute]
-    public string URL { get; set; } = "";
+    public string URL { get; set; }
 }
 
 
 public sealed class TerminalServerRef
 {
+    public TerminalServerRef() : this(string.Empty)
+    {
+    }
+
+    public TerminalServerRef(string @ref)
+    {
+        Ref = @ref;
+    }
+
     [XmlAttribute]
-    public string Ref { get; set; } = "";
+    public string Ref { get; set; }
 }
 
 public sealed class TerminalServer

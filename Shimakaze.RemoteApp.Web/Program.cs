@@ -24,7 +24,11 @@ app
         ContentTypeProvider = new FileExtensionContentTypeProvider(
         new Dictionary<string, string>
         {
-            [".rdp"] = "text/plain"
+            [".rdp"] = "text/plain",
+            [".png"] = "image/png",
+            [".ico"] = "image/x-icon",
+            // 令人疑惑
+            //[".ico"] = "image/vnd.microsoft.icon",
         })
     });
 
