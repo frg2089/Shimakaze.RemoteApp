@@ -1,3 +1,4 @@
+using System.Net;
 using System.Xml.Serialization;
 
 using Microsoft.AspNetCore.StaticFiles;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddSingleton<RemoteApps>()
     .AddSingleton<RemoteAppService>()
+    .AddSingleton<XmlSerializer>(i => new(typeof(ResourceCollection)))
     .AddWindowsService()
     .AddHostedService<Worker>();
 
@@ -26,18 +28,23 @@ app
         })
     });
 
-XmlSerializer serializer = new(typeof(ResourceCollection));
-app.MapGet("/", async (HttpContext context) =>
+app.MapGet("/", Get);
+
+app.Urls.Add("https://*:443");
+app.Logger.LogInformation(">>> https://{host}:443 <<<", Dns.GetHostName());
+
+await app.RunAsync();
+
+async Task Get(HttpContext context)
 {
-    var logger = app.Services.GetService<ILogger<RemoteAppService>>();
     var service = app.Services.GetRequiredService<RemoteAppService>();
+    var serializer = app.Services.GetRequiredService<XmlSerializer>();
 
-    logger?.LogInformation("UserAgent:\r\n{0}", context.Request.Headers.UserAgent.ToString());
+    app.Logger.LogInformation("UserAgent:\r\n{user-agent}", context.Request.Headers.UserAgent.ToString());
+    context.Response.StatusCode = (int)HttpStatusCode.OK;
     context.Response.ContentType = "application/xml";
-    serializer.Serialize(context.Response.BodyWriter.AsStream(), await service.GetRDS());
-    await context.Response.Body.FlushAsync();
-    await context.Response.Body.DisposeAsync();
-    return Results.Ok();
-});
-
-app.Run();
+    using StreamWriter sw = new(context.Response.BodyWriter.AsStream());
+    serializer.Serialize(sw, await service.GetRDS());
+    await sw.FlushAsync();
+    await context.Response.CompleteAsync();
+}
