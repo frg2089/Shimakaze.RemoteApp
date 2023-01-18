@@ -1,5 +1,7 @@
 #requires -version 5
 #requires -runasadministrator
+#requires -modules Microsoft.PowerShell.Utility
+#requires -modules Microsoft.PowerShell.Management
 #requires -modules PKI
 
 using namespace System.Runtime.InteropServices
@@ -46,6 +48,12 @@ New-SelfSignedCertificate `
 | Export-PfxCertificate `
   -FilePath ".\Shimakaze.RemoteApp.Web.pfx" `
   -Password $spwd
+New-Service `
+  -Name "Shimakaze RDS" `
+  -BinaryPathName "$PSScriptRoot\Shimakaze.RemoteApp.Web.exe" `
+  -DisplayName "Shimakaze Remote Desktop Source" `
+  -Description "Provide subscription source services for remote desktops and applications." `
+  -StartupType "Automatic"
 
 $obj = Get-Content "$PSScriptRoot\appsettings.json" | ConvertFrom-Json
 $obj.AllowedHosts = $hostname
@@ -54,4 +62,6 @@ $obj.DefaultIconPath = "$([System.Environment]::GetFolderPath('System'))\shell32
 $obj.Kestrel.Certificates.Default.Password = Get-String $spwd
 $obj | ConvertTo-Json -Depth 5 | Out-File "$PSScriptRoot\appsettings.json" -Force
 
-New-Item -ItemType Directory -Path "wwwroot"
+New-Item -ItemType "Directory" -Path "wwwroot"
+
+Start-Service "Shimakaze RDS"
