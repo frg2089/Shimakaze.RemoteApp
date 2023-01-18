@@ -1,8 +1,0 @@
-ExtractIcon
-ExtractIconEx
-
-SHGetFileInfo
-IImageList2
-SHGetImageList
-SHIL_JUMBO
-IMAGE_LIST_DRAW_STYLE

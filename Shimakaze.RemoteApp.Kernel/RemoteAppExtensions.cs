@@ -29,30 +29,43 @@ public static class RemoteAppExtensions
         remoteapplicationfileextensions = string.Join(',', app.FileTypeAssociations?.Select(i => $".{i.Extension}") ?? Array.Empty<string>())
     };
 
-    public static Resource CreateWebFeedResource(this RemoteApp app, TerminalServerRef terminalServerRef, string rdpPath, string icoPath, string pngPath, DateTime lastUpdated) => new()
-    {
-        ID = app.Name,
-        Alias = app.Name,
-        Title = app.FullName,
-        LastUpdated = lastUpdated.ToString("O"),
-        Type = "RemoteApp",
-        Icons = new()
+    public static Resource CreateWebFeedResource(
+        this RemoteApp app,
+        TerminalServerRef terminalServerRef,
+        string rdpPath,
+        string icoPath,
+        string pngPath,
+        DateTime lastUpdated,
+        Action<FileTypeAssociation, string>? action = null) => new()
         {
-            IconRaw = new(icoPath),
-            Icon32 = new(pngPath)
-        },
-        FileExtensions = app.FileTypeAssociations?.Select(i => new FileExtension()
-        {
-            Name = i.Extension.TrimStart('.'),
-            FileAssociationIcons = new IconRaw[]{
-                new (  $"{app.Name}.{i.Extension.TrimStart('.')}.ico")
+            ID = app.Name,
+            Alias = app.Name,
+            Title = app.FullName,
+            LastUpdated = lastUpdated.ToString("O"),
+            Type = "RemoteApp",
+            Icons = new()
+            {
+                IconRaw = new(icoPath),
+                Icon32 = new(pngPath)
             },
-        }).ToArray() ?? Array.Empty<FileExtension>(),
-        HostingTerminalServers = new HostingTerminalServer[]{
+            FileExtensions = app.FileTypeAssociations?.Select(i =>
+            {
+                string ext = i.Extension.TrimStart('.');
+                action?.Invoke(i, ext);
+                return new FileExtension()
+                {
+                    Name = ext,
+                    FileAssociationIcons = new IconRaw[]{
+                        new ($"{app.Name}.{ext}.ico")
+                    },
+                };
+
+            }).ToArray() ?? Array.Empty<FileExtension>(),
+            HostingTerminalServers = new HostingTerminalServer[]{
             new (){
                 ResourceFile =  new(rdpPath),
                 TerminalServerRef = terminalServerRef
             }
         }
-    };
+        };
 }

@@ -1,5 +1,7 @@
-using System;
+﻿using System;
 using System.Drawing;
+using System.Drawing.IconLib;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -17,47 +19,54 @@ public sealed class RemoteAppService
     private readonly ILogger<RemoteAppService> _logger;
     private readonly IConfiguration _configuration;
     private static readonly string Hostname = Dns.GetHostName();
+    private readonly string DefaultIconPath;
+    private readonly int DefaultIconIndex;
 
     public RemoteAppService(RemoteApps apps, ILogger<RemoteAppService> logger, IConfiguration configuration)
     {
         _apps = apps;
         _logger = logger;
         _configuration = configuration;
+        DefaultIconPath = configuration.GetValue<string>("DefaultIconPath") ?? string.Empty;
+        DefaultIconIndex = configuration.GetValue<int>("DefaultIconIndex");
     }
 
-    private Icon GetIcon(string path, int index)
+    private void ExportIco(string source, int index, string target)
     {
-        return IconLoader.GetImage(path)
-            ?? IconLoader.GetImage(_configuration.GetValue<string>("DefaultIconPath") ?? string.Empty)
-            ?? throw new InvalidOperationException("Cannot found icon");
+        if (File.Exists(target))
+            return;
+
+        _logger.LogInformation(FileNotFoundMessage, target);
+
+        MultiIcon mIcon = new();
+        mIcon.Load(source);
+        SingleIcon? sIcon = index < mIcon.Count
+           ? mIcon[index]
+           : default;
+
+        if (sIcon is null)
+        {
+            index = DefaultIconIndex;
+
+            mIcon.Load(DefaultIconPath);
+
+            sIcon = index < mIcon.Count
+               ? mIcon[index]
+               : default;
+        }
+
+        sIcon?.Save(target);
     }
 
-    private void ExportIcon(Lazy<Icon> icon, string ico, string png, bool leaveOpen = false)
+    private void ExportPng(string ico, string png)
     {
-        if (!File.Exists(ico))
-        {
-            _logger.LogInformation(FileNotFoundMessage, ico);
+        if (File.Exists(png) || !File.Exists(ico))
+            return;
 
-            icon.Value.ToBitmap().Save(
-                ico,
-                System.Drawing.Imaging.ImageFormat.Icon);
-        }
+        _logger.LogInformation(FileNotFoundMessage, png);
 
-        if (!File.Exists(png))
-        {
-            _logger.LogInformation(FileNotFoundMessage, png);
-
-
-            icon.Value.ToBitmap().Save(
-                png,
-                System.Drawing.Imaging.ImageFormat.Png
-                );
-        }
-
-        if (icon.IsValueCreated && !leaveOpen)
-        {
-            icon.Value.Dispose();
-        }
+        using var image = Image.FromFile(ico);
+        image.Save(png, ImageFormat.Png);
     }
 
     private async Task ExportRDP(Kernel.RemoteApp app, string rdp)
@@ -69,39 +78,37 @@ public sealed class RemoteAppService
         }
     }
 
-    public (string png, string ico, string rdp, string pngTruePath, string icoTruePath, string rdpTruePath) GetPaths(Kernel.RemoteApp app, string path)
+
+    private async Task<Resource> GetResource(Kernel.RemoteApp app, TerminalServerRef terminalServerRef, string path)
     {
         string png = $"{app.Name}.png";
         string ico = $"{app.Name}.ico";
         string rdp = $"{app.Name}.rdp";
+        string extIco = $"{app.Name}.{{0}}.ico";
         string pngTruePath = Path.GetFullPath(Path.Combine(path, png));
         string icoTruePath = Path.GetFullPath(Path.Combine(path, ico));
         string rdpTruePath = Path.GetFullPath(Path.Combine(path, rdp));
-        return (png, ico, rdp, pngTruePath, icoTruePath, rdpTruePath);
-    }
+        string extIcoTruePath = Path.GetFullPath(Path.Combine(path, extIco));
 
-    public async Task GenerateFilesIfNotExist(Kernel.RemoteApp app, string rdpTruePath, string icoTruePath, string pngTruePath)
-    {
         Task task = ExportRDP(app, rdpTruePath);
-        ExportIcon(
-            new(() => GetIcon(app.IconPath, app.IconIndex)),
-            icoTruePath,
-            pngTruePath);
-
+        ExportIco(app.IconPath, app.IconIndex, icoTruePath);
+        ExportPng(icoTruePath, pngTruePath);
         await task;
-    }
-
-    private async Task<Resource> GetResource(Kernel.RemoteApp app, TerminalServerRef terminalServerRef, string path)
-    {
-        var (png, ico, rdp, pngTruePath, icoTruePath, rdpTruePath) = GetPaths(app, path);
-        await GenerateFilesIfNotExist(app, rdpTruePath, icoTruePath, pngTruePath);
 
         return app.CreateWebFeedResource(
             terminalServerRef,
             rdp,
             ico,
             png,
-            File.GetLastWriteTimeUtc(rdpTruePath));
+            File.GetLastWriteTimeUtc(rdpTruePath),
+            (item, ext) =>
+            {
+                if (!int.TryParse(item.IconIndex, out int i))
+                    i = 0;
+
+                string p = string.IsNullOrWhiteSpace(item.IconPath) ? app.IconPath : item.IconPath;
+                ExportIco(p, i, string.Format(extIcoTruePath, ext));
+            });
     }
 
     private async Task<Resource> GetDesktop(string dateTime, TerminalServerRef terminalServerRef, string path)
