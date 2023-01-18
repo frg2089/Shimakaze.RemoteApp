@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -184,6 +184,9 @@ public sealed class RemoteAppService
     {
         string path = _configuration.GetValue<string>("StaticResourcesPath") ?? string.Empty;
         string dateTime = DateTime.UtcNow.ToString("O");
+
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
 
         TerminalServerRef terminalServerRef = new(Hostname);
 

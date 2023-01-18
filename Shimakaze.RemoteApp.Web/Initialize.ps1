@@ -59,7 +59,7 @@ New-Item -ItemType "Directory" -Path "wwwroot" `
 | Out-Null
 
 $obj = Get-Content "$PSScriptRoot\appsettings.json" | ConvertFrom-Json
-$obj.AllowedHosts = $hostname
+# $obj.AllowedHosts = $hostname
 $obj.StaticResourcesPath = "$PSScriptRoot\wwwroot"
 $obj.DefaultIconPath = "$([System.Environment]::GetFolderPath('System'))\shell32.dll"
 $obj.Kestrel.Certificates.Default.Password = Get-String $spwd
