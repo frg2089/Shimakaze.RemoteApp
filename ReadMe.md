@@ -1,5 +1,5 @@
 # Shimakaze.RemoteApp
-English (Machine Translate) | [中文(简体)](.\ReadMe.zh-Hans.md)
+English (Machine Translate) | [中文(简体)](./ReadMe.zh-Hans.md)
 
 Generate rdp files based on registry entries and provide WebFeed subscription service.
 

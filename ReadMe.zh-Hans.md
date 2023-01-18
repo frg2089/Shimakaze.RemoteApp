@@ -1,5 +1,5 @@
 # Shimakaze.RemoteApp
-[English (Machine Translate)](.\ReadMe.md) | 中文(简体)
+[English (Machine Translate)](./ReadMe.md) | 中文(简体)
 
 根据注册表项生成rdp文件并提供WebFeed订阅服务。
 
