@@ -40,7 +40,7 @@ public sealed record RemoteApp(
 
     public void SaveTo(RegistryKey applications)
     {
-        var key = applications.CreateSubKey(Name, true);
+        using var key = applications.CreateSubKey(Name, true);
 
         key.SetValue("Name", FullName, RegistryValueKind.String);
 

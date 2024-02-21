@@ -8,25 +8,25 @@ public static class RemoteAppExtensions
 {
     public static RDPFile CreateRDPFile(this RemoteApp app, string hostname) => new()
     {
-        keyboardhook = 3,
-        allow_desktop_composition = 1,
-        allow_font_smoothing = 1,
-        alternate_full_address = hostname,
-        alternate_shell = "rdpinit.exe",
-        devicestoredirect = "*",
-        disableremoteappcapscheck = 1,
-        drivestoredirect = "*",
-        full_address = hostname,
-        prompt_for_credentials_on_client = 1,
-        promptcredentialonce = 0,
-        redirectcomports = 1,
-        redirectdrives = 1,
-        remoteapplicationmode = 1,
-        remoteapplicationname = app.FullName,
-        remoteapplicationprogram = $"||{app.Name}",
-        span_monitors = 1,
-        use_multimon = 1,
-        remoteapplicationfileextensions = string.Join(',', app.FileTypeAssociations?.Select(i => $".{i.Extension}") ?? Array.Empty<string>())
+        Keyboardhook = 3,
+        AllowDesktopComposition = 1,
+        AllowFontSmoothing = 1,
+        AlternateFullAddress = hostname,
+        AlternateShell = "rdpinit.exe",
+        Devicestoredirect = "*",
+        Disableremoteappcapscheck = 1,
+        Drivestoredirect = "*",
+        FullAddress = hostname,
+        PromptForCredentialsOnClient = 1,
+        Promptcredentialonce = 0,
+        Redirectcomports = 1,
+        Redirectdrives = 1,
+        Remoteapplicationmode = 1,
+        Remoteapplicationname = app.FullName,
+        Remoteapplicationprogram = $"||{app.Name}",
+        SpanMonitors = 1,
+        UseMultimon = 1,
+        Remoteapplicationfileextensions = string.Join(',', app.FileTypeAssociations?.Select(i => $".{i.Extension}") ?? Array.Empty<string>())
     };
 
     public static Resource CreateWebFeedResource(
