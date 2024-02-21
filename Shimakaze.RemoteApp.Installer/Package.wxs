@@ -1,0 +1,36 @@
+﻿<Wix
+  xmlns="http://wixtoolset.org/schemas/v4/wxs"
+  xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+  xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+  <Package
+    Name="Shimakaze.RemoteApp.Installer"
+    Manufacturer="ShimakazeSoft"
+    Version="1.0.0.0"
+    UpgradeCode="01c3b60c-fed8-45fe-a7f7-0ec204da7531">
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <WixVariable
+      Id="WixUILicenseRtf"
+      Value="LICENSE" />
+
+    <netfx:DotNetCompatibilityCheck
+      Property="DOTNETRUNTIMECHECK"
+      RollForward="major"
+      RuntimeType="aspnet"
+      Platform="$(sys.BUILDARCHSHORT)"
+      Version="8.0.0" />
+
+    <Launch Condition="Installed OR DOTNETRUNTIMECHECK=&quot;0&quot;"
+        Message="!(loc.DotnetError)" />
+    
+    <ui:WixUI
+      Id="WixUI_InstallDir"
+      InstallDirectory="INSTALLFOLDER" />
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="AppComponents" />
+    </Feature>
+  </Package>
+</Wix>

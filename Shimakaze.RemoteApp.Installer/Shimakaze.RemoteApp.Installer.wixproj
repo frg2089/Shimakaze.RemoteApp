@@ -1,0 +1,16 @@
+﻿<Project Sdk="WixToolset.Sdk">
+  <PropertyGroup>
+    <Cultures>en-US;zh-CN</Cultures>
+  </PropertyGroup>
+  <ItemGroup>
+    <BindPath Include="..\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shimakaze.RemoteApp.Kernel\Shimakaze.RemoteApp.Kernel.csproj" />
+    <ProjectReference Include="..\Shimakaze.RemoteApp.Web\Shimakaze.RemoteApp.Web.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Netfx.wixext" />
+    <PackageReference Include="WixToolset.UI.wixext" />
+  </ItemGroup>
+</Project>

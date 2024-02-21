@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shimakaze.RemoteApp.Kernel"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shimakaze.RemoteApp.Web", "Shimakaze.RemoteApp.Web\Shimakaze.RemoteApp.Web.csproj", "{D8727C9D-BE8C-4FCE-A2C5-7D7CC35C0E81}"
 EndProject
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Shimakaze.RemoteApp.Installer", "Shimakaze.RemoteApp.Installer\Shimakaze.RemoteApp.Installer.wixproj", "{4D7A12C2-0465-4193-88C3-27DC68B82B16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{D8727C9D-BE8C-4FCE-A2C5-7D7CC35C0E81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8727C9D-BE8C-4FCE-A2C5-7D7CC35C0E81}.Release|x64.ActiveCfg = Release|x64
 		{D8727C9D-BE8C-4FCE-A2C5-7D7CC35C0E81}.Release|x64.Build.0 = Release|x64
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Debug|x64.ActiveCfg = Debug|x64
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Debug|x64.Build.0 = Debug|x64
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Release|x64.ActiveCfg = Release|x64
+		{4D7A12C2-0465-4193-88C3-27DC68B82B16}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,24 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="AppComponents" Directory="INSTALLFOLDER">
+      <Component Guid="582f052d-b088-47fc-a636-df5fed490194">
+        <File Source="appsettings.json" />
+        <File Source="IconLib.dll" />
+        <File Source="Microsoft.Extensions.Hosting.WindowsServices.dll" />
+        <File Source="Microsoft.Win32.SystemEvents.dll" />
+        <File Source="Shimakaze.RemoteApp.Kernel.dll" />
+        <File Source="Shimakaze.RemoteApp.Kernel.pdb" />
+        <File Source="Shimakaze.RemoteApp.Web.deps.json" />
+        <File Source="Shimakaze.RemoteApp.Web.dll" />
+        <File Source="Shimakaze.RemoteApp.Web.exe" />
+        <File Source="Shimakaze.RemoteApp.Web.pdb" />
+        <File Source="Shimakaze.RemoteApp.Web.runtimeconfig.json" />
+        <File Source="System.Drawing.Common.dll" />
+        <File Source="System.ServiceProcess.ServiceController.dll" />
+        <File Source="WinCopies.Util.dll" />
+        <File Source="WinCopies.WindowsAPICodePack.Win32Native.Consts.dll" />
+        <File Source="WinCopies.WindowsAPICodePack.Win32Native.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
